@@ -7,7 +7,7 @@
 //
 
 #import "DecodingViewController.h"
-//#import "SieveOfEratosthenes.h"
+#import "SieveOfEratosthenes.h"
 
 @interface DecodingViewController ()
 

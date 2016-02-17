@@ -24,14 +24,17 @@
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     
     
-    SieveOfEratosthenes *pointer = [[SieveOfEratosthenes alloc] initWithSize:10000];
+    SieveOfEratosthenes *pointer = [[SieveOfEratosthenes alloc] initWithSize:80];
     
-    [pointer createArrayOfPrimes];
+    //[pointer createShortArrayOfPrimes];
     
     NSBundle *appBundle = [NSBundle mainBundle];
     
     DecodingViewController *dvc = [[DecodingViewController alloc] initWithNibName:@"DecodingViewController" bundle:appBundle];
     EncodingViewController *evc = [[EncodingViewController alloc] initWithNibName:@"EncodingViewController" bundle:appBundle];
+    
+    [evc initArrayOfPrimes:[pointer returnShortArrayOfPrimes] withSize:[pointer returnSize]];
+    [evc encode];
     
     UITabBarController *tabBarController = [[UITabBarController alloc] init];
     

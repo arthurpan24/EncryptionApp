@@ -12,8 +12,9 @@
 
 - (id) initWithSize:(int)maxSize;
 + (BOOL *) returnArrayOfPrimes;
-//+ (int) returnNumberOfPrimes;
-- (void) testPrime;
-- (void) createArrayOfPrimes;
+- (int *) returnShortArrayOfPrimes;
+- (int) returnSize;
++ (void) testPrime;
+- (void) createShortArrayOfPrimes;
 
 @end

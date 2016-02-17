@@ -16,37 +16,61 @@
 
 BOOL *arrayOfPrimes;
 int maxNumber;
+int *shortArrayOfPrimes;
+int numberOfPrimes;
 
 
 - (id) initWithSize:(int)maxNumber {
     self = [super init];
     if (self) {
         [self initializeArrayOfPrimes:maxNumber];
-        [self createArrayOfPrimes];
     }
     return self;
+}
+
+- (int) returnSize {
+    return numberOfPrimes;
 }
 
 + (BOOL *) returnArrayOfPrimes {
     return arrayOfPrimes;
 }
 
-- (void) testPrime {
+- (int *) returnShortArrayOfPrimes {
+    return shortArrayOfPrimes;
+}
+
++ (void) testPrime {
     NSLog(@"this works");
     
 }
 
-- (void) createArrayOfPrimes {
-    NSLog(@"PRIMES UNDER %d: ", maxNumber);
-    NSMutableString *testString = [[NSMutableString alloc]init];
-    NSString *tempString;
+- (void) createShortArrayOfPrimes {
     for (int i =0; i < maxNumber; i++){
         if (arrayOfPrimes[i] == YES){
-            tempString = [NSString stringWithFormat:@"%d ", i];
-            [testString appendString:tempString];
+            numberOfPrimes++;
         }
     }
-    NSLog(@"%@", testString);
+
+    shortArrayOfPrimes = malloc(numberOfPrimes*sizeof(int));
+    int z = 0;
+    for (int j=0; j < maxNumber; j++) {
+        if (arrayOfPrimes[j] == YES){
+            shortArrayOfPrimes[z] = j;
+            z++;
+        }
+    }
+    
+    NSLog(@"PRIMES UNDER %d: ", maxNumber);
+    NSMutableString *testString2 = [[NSMutableString alloc]init];
+    NSString *tempString2;
+    for (int i =0; i < numberOfPrimes; i++){
+        tempString2 = [NSString stringWithFormat:@"%d ", shortArrayOfPrimes[i]];
+        [testString2 appendString:tempString2];
+        
+    }
+    NSLog(@"%@", testString2);
+    NSLog(@"number of primes: %d", numberOfPrimes);
     return;
 }
 
@@ -59,6 +83,7 @@ int maxNumber;
     }
     
     [self sieveOfEratosthenes:maxNumber];
+    [self createShortArrayOfPrimes];
 }
 
 - (void)sieveOfEratosthenes:(int)maxNumber {

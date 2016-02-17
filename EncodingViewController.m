@@ -7,15 +7,31 @@
 //
 
 #import "EncodingViewController.h"
-//#import "SieveOfEratosthenes.h"
+#import "SieveOfEratosthenes.h"
+#include <stdlib.h>
 
 @interface EncodingViewController ()
+@property (weak, nonatomic) IBOutlet UITextField *userInput;
+@property (weak, nonatomic) IBOutlet UILabel *key1;
+@property (weak, nonatomic) IBOutlet UILabel *key2;
+@property int p;
+@property int q;
+@property int n;
+@property int totient;
+@property int d;
+@property int e;
 
 @end
 
 @implementation EncodingViewController
 
-//int *arrayOfPrimes;
+int *arr; //this might be a bad implementation
+int numPrime;
+
+- (void) initArrayOfPrimes:(int *)array withSize:(int)numberPrimes{
+    arr = array;
+    numPrime = numberPrimes;
+}
 
 - (instancetype)initWithNibName:(NSString *)nibNameOrNil
                         bundle:(NSBundle *)nibBundleOrNil {
@@ -25,7 +41,6 @@
         //Set the tab bar item's title
         self.tabBarItem.title = @"encodingVC";
         
-       // arrayOfPrimes = [SieveOfEratosthenes returnArrayOfPrimes];
         
         //Create a UIImage from a file
         //This will use Hypno@2x.png on retina display devices
@@ -35,6 +50,52 @@
         //self.tabBarItem.image = image;
     }
     return self;
+}
+
+- (void) encode {
+    _p = arc4random_uniform((int)(numPrime-1)/2) + (int)(numPrime-1)/2;
+    _q = arc4random_uniform((int)(numPrime-1)/2) + (int)(numPrime-1)/2;
+    
+    NSLog(@"p value: %d", _p);
+    NSLog(@"q value: %d", _q);
+    _n = _p * _q;
+    NSLog(@"n value: %d", _n);
+    _totient = (_p-1)*(_q-1);
+    NSLog(@"totient value: %d", _totient);
+    _d = arr[numPrime-1];
+    NSLog(@"d value: %d", _d);
+    _e = [self mul_inv:_d withMod:_totient];
+    NSLog(@"e value: %d", _e);
+    
+    int test = (int)[self binaryExponentiationBase:97 withPower:_e];
+    NSLog(@"value of test: %d", test);
+}
+
+//OK, this works, but is this brute force or nah?
+-(int) mul_inv:(int) a withMod:(int)b
+{
+    int b0 = b, t, q;
+    int x0 = 0, x1 = 1;
+    if (b == 1) return 1;
+    while (a > 1) {
+        q = a / b;
+        t = b, b = a % b, a = t;
+        t = x0, x0 = x1 - q * x0, x1 = t;
+    }
+    if (x1 < 0) x1 += b0;
+    return x1;
+}
+
+- (int) binaryExponentiationBase:(int)x withPower:(int)n {
+    if (n ==0)
+        return 1;
+    else if (n == 1)
+        return x;
+    else if (n%2 == 0)
+        return [self binaryExponentiationBase:(x*x) withPower:(n/2)];
+    else if (n%2 != 0)
+        return [self binaryExponentiationBase:(x*x) withPower:((n-1)/2)];
+    return -1;
 }
 
 - (void)viewDidLoad {
