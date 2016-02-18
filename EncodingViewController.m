@@ -8,12 +8,18 @@
 
 #import "EncodingViewController.h"
 #import "SieveOfEratosthenes.h"
+
 #include <stdlib.h>
 
-@interface EncodingViewController ()
+@interface EncodingViewController () <UITextFieldDelegate>
+
 @property (weak, nonatomic) IBOutlet UITextField *userInput;
 @property (weak, nonatomic) IBOutlet UILabel *key1;
 @property (weak, nonatomic) IBOutlet UILabel *key2;
+@property (weak, nonatomic) IBOutlet UITextView *encodedText;
+@property (weak, nonatomic) IBOutlet UIButton *generateButton;
+- (IBAction)handleButtonClick:(id)sender;
+
 @property int p;
 @property int q;
 @property int n;
@@ -60,15 +66,17 @@ int numPrime;
     NSLog(@"q value: %d", _q);
     _n = _p * _q;
     NSLog(@"n value: %d", _n);
+    _key1.text = [NSString stringWithFormat:@"%d",_n];
     _totient = (_p-1)*(_q-1);
     NSLog(@"totient value: %d", _totient);
     _d = arr[numPrime-1];
     NSLog(@"d value: %d", _d);
     _e = [self mul_inv:_d withMod:_totient];
     NSLog(@"e value: %d", _e);
-    
+    _key2.text =  [NSString stringWithFormat:@"%d",_e];
     int test = (int)[self binaryExponentiationBase:97 withPower:_e];
     NSLog(@"value of test: %d", test);
+    
 }
 
 //OK, this works, but is this brute force or nah?
@@ -101,6 +109,27 @@ int numPrime;
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
+    [_userInput setDelegate:self];
+   // NSString* testPrint = [_userInput text];
+    //NSLog(@"echo %@", testPrint);
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    _userInput.placeholder = @"Encode this";
+    _userInput.returnKeyType = UIReturnKeyDone;
+    
+    _encodedText.text = @"";
+    _key1.text = @"";
+    _key2.text = @"";
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    NSLog(@"%@", _userInput.text);
+    _encodedText.text = _userInput.text;
+    [textField resignFirstResponder];
+    return YES;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -117,5 +146,10 @@ int numPrime;
     // Pass the selected object to the new view controller.
 }
 */
+
+- (IBAction)handleButtonClick:(id)sender {
+    _key1.text = [NSString stringWithFormat:@"%d", _n];
+    _key2.text = [NSString stringWithFormat:@"%d", _e];
+}
 
 @end

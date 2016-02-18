@@ -9,7 +9,12 @@
 #import "DecodingViewController.h"
 #import "SieveOfEratosthenes.h"
 
-@interface DecodingViewController ()
+@interface DecodingViewController () <UITextFieldDelegate>
+@property (weak, nonatomic) IBOutlet UITextField *inputText;
+@property (weak, nonatomic) IBOutlet UITextField *key1Input;
+@property (weak, nonatomic) IBOutlet UITextField *key2Input;
+@property (weak, nonatomic) IBOutlet UITextView *decodedText;
+- (IBAction)decodeButtonPressed:(id)sender;
 
 @end
 
@@ -46,16 +51,44 @@
     // Do any additional setup after loading the view from its nib.
 }
 
-//Create all prime numbers before loading the screen
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
+    _inputText.placeholder = @"Decode this";
+    _inputText.returnKeyType = UIReturnKeyDone;
+    _inputText.delegate = self;
+    
+    _key1Input.placeholder = @"key1";
+    _key1Input.returnKeyType = UIReturnKeyDone;
+    _key1Input.delegate = self;
+    
+    _key2Input.placeholder = @"key2";
+    _key2Input.returnKeyType = UIReturnKeyDone;
+    _key2Input.delegate = self;
+    
+    _decodedText.text = @"";
+}
+
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    NSLog(@"%@", _inputText.text);
+    _decodedText.text = _inputText.text;
+    [textField resignFirstResponder];
+    return YES;
 }
 
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)decode {
+    
+}
+
+- (IBAction)decodeButtonPressed:(id)sender {
+    NSLog(@"decode button pressed");
+    [self decode];
 }
 
 /*
@@ -67,5 +100,7 @@
     // Pass the selected object to the new view controller.
 }
 */
+
+
 
 @end

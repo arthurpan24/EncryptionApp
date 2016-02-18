@@ -7,6 +7,8 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="EncodingViewController">
             <connections>
+                <outlet property="encodedText" destination="obJ-l2-Yeg" id="s3u-1g-iSi"/>
+                <outlet property="generateButton" destination="YKX-iM-QjS" id="znE-Sf-bwK"/>
                 <outlet property="key1" destination="vFV-eJ-U1W" id="kqD-aJ-JKs"/>
                 <outlet property="key2" destination="AKy-OE-9Mc" id="ps6-JM-qkd"/>
                 <outlet property="userInput" destination="Ad9-Ua-VdB" id="xv4-VL-aiP"/>
@@ -69,6 +71,9 @@
                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YKX-iM-QjS">
                     <rect key="frame" x="129" y="324" width="116" height="30"/>
                     <state key="normal" title="GENERATE"/>
+                    <connections>
+                        <action selector="handleButtonClick:" destination="-1" eventType="touchUpInside" id="mpZ-fF-tOD"/>
+                    </connections>
                 </button>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
