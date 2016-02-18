@@ -19,7 +19,7 @@ int maxNumber;
 int *shortArrayOfPrimes;
 int numberOfPrimes;
 
-
+//Basic initializer, receives the max number possible that we want to find primes up to
 - (id) initWithSize:(int)maxNumber {
     self = [super init];
     if (self) {
@@ -28,41 +28,7 @@ int numberOfPrimes;
     return self;
 }
 
-- (int) returnSize {
-    return numberOfPrimes;
-}
-
-- (int *) returnShortArrayOfPrimes {
-    return shortArrayOfPrimes;
-}
-
-
-- (void) createShortArrayOfPrimes {
-    for (int i =0; i < maxNumber; i++){
-        if (arrayOfPrimes[i] == YES){
-            numberOfPrimes++;
-        }
-    }
-
-    shortArrayOfPrimes = malloc(numberOfPrimes*sizeof(int));
-    int z = 0;
-    for (int j=0; j < maxNumber; j++) {
-        if (arrayOfPrimes[j] == YES){
-            shortArrayOfPrimes[z] = j;
-            z++;
-        }
-    }
-    
-    NSMutableString *testString2 = [[NSMutableString alloc]init];
-    NSString *tempString2;
-    for (int i =0; i < numberOfPrimes; i++){
-        tempString2 = [NSString stringWithFormat:@"%d ", shortArrayOfPrimes[i]];
-        [testString2 appendString:tempString2];
-        
-    }
-    return;
-}
-
+//Initialize an array of boolean values that represent whether a number is a prime number or not
 - (void) initializeArrayOfPrimes:(int)maxSize {
     maxNumber = maxSize;
     arrayOfPrimes = malloc(maxNumber*sizeof(BOOL)); //allocate space for C-style array
@@ -75,6 +41,7 @@ int numberOfPrimes;
     [self createShortArrayOfPrimes];
 }
 
+//The core function that implements the Sieve of Eratosthenes
 - (void)sieveOfEratosthenes:(int)maxNumber {
     //initialize 0 and 1 as false, assume that array is at least 2 ints long
     arrayOfPrimes[0] = NO;
@@ -89,6 +56,36 @@ int numberOfPrimes;
     }
 }
 
+//Take only the prime values and create an array of integers
+- (void) createShortArrayOfPrimes {
+    
+    //Find out how many prime numbers there are in original list to allocate the right space for C-style array
+    for (int i =0; i < maxNumber; i++){
+        if (arrayOfPrimes[i] == YES){
+            numberOfPrimes++;
+        }
+    }
+    
+    shortArrayOfPrimes = malloc(numberOfPrimes*sizeof(int)); //allocate space for C-style array
+    
+    int z = 0;
+    for (int j=0; j < maxNumber; j++) {
+        if (arrayOfPrimes[j] == YES){
+            shortArrayOfPrimes[z] = j;
+            z++;
+        }
+    }
+    
+    return;
+}
 
+//Getters to send to other classes
+- (int) returnSize {
+    return numberOfPrimes;
+}
+
+- (int *) returnShortArrayOfPrimes {
+    return shortArrayOfPrimes;
+}
 
 @end
