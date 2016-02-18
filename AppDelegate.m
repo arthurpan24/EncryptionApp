@@ -24,7 +24,7 @@
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     
     
-    SieveOfEratosthenes *pointer = [[SieveOfEratosthenes alloc] initWithSize:80];
+    SieveOfEratosthenes *pointer = [[SieveOfEratosthenes alloc] initWithSize:100];
     
     //[pointer createShortArrayOfPrimes];
     
@@ -34,7 +34,8 @@
     EncodingViewController *evc = [[EncodingViewController alloc] initWithNibName:@"EncodingViewController" bundle:appBundle];
     
     [evc initArrayOfPrimes:[pointer returnShortArrayOfPrimes] withSize:[pointer returnSize]];
-    [evc encode];
+    [evc generateKeys];
+    [dvc initializeN:[evc getN] andE:[evc getE] andD:[evc getD]];
     
     UITabBarController *tabBarController = [[UITabBarController alloc] init];
     

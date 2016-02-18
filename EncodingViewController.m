@@ -8,6 +8,7 @@
 
 #import "EncodingViewController.h"
 #import "SieveOfEratosthenes.h"
+#import "JKBigInteger.h" //Imported Library to handle big integers
 
 #include <stdlib.h>
 
@@ -16,8 +17,10 @@
 @property (weak, nonatomic) IBOutlet UITextField *userInput;
 @property (weak, nonatomic) IBOutlet UILabel *key1;
 @property (weak, nonatomic) IBOutlet UILabel *key2;
+@property (weak, nonatomic) IBOutlet UILabel *privateKey;
 @property (weak, nonatomic) IBOutlet UITextView *encodedText;
 @property (weak, nonatomic) IBOutlet UIButton *generateButton;
+
 - (IBAction)handleButtonClick:(id)sender;
 
 @property int p;
@@ -31,6 +34,7 @@
 
 @implementation EncodingViewController
 
+NSMutableArray *inputString;
 int *arr; //this might be a bad implementation
 int numPrime;
 
@@ -58,25 +62,32 @@ int numPrime;
     return self;
 }
 
-- (void) encode {
+-(int)getN{
+    return _n;
+}
+
+-(int)getD{
+    return _d;
+}
+
+-(int)getE{
+    return _e;
+}
+
+- (void) generateKeys {
     _p = arc4random_uniform((int)(numPrime-1)/2) + (int)(numPrime-1)/2;
     _q = arc4random_uniform((int)(numPrime-1)/2) + (int)(numPrime-1)/2;
+    _n = _p * _q;
+    _totient = (_p-1)*(_q-1);
+    _d = arr[numPrime-1];
+    _e = [self mul_inv:_d withMod:_totient];
     
+    NSLog(@"e value: %d", _e);
     NSLog(@"p value: %d", _p);
     NSLog(@"q value: %d", _q);
-    _n = _p * _q;
-    NSLog(@"n value: %d", _n);
-    _key1.text = [NSString stringWithFormat:@"%d",_n];
-    _totient = (_p-1)*(_q-1);
-    NSLog(@"totient value: %d", _totient);
-    _d = arr[numPrime-1];
     NSLog(@"d value: %d", _d);
-    _e = [self mul_inv:_d withMod:_totient];
-    NSLog(@"e value: %d", _e);
-    _key2.text =  [NSString stringWithFormat:@"%d",_e];
-    int test = (int)[self binaryExponentiationBase:97 withPower:_e];
-    NSLog(@"value of test: %d", test);
-    
+    NSLog(@"totient value: %d", _totient);
+    NSLog(@"n value: %d", _n);
 }
 
 //OK, this works, but is this brute force or nah?
@@ -94,6 +105,7 @@ int numPrime;
     return x1;
 }
 
+//for if we want to do exponentials fast with smaller numbers
 - (int) binaryExponentiationBase:(int)x withPower:(int)n {
     if (n ==0)
         return 1;
@@ -128,8 +140,33 @@ int numPrime;
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {
     NSLog(@"%@", _userInput.text);
     _encodedText.text = _userInput.text;
+
+    [self encode];
     [textField resignFirstResponder];
     return YES;
+}
+
+- (void)encode {
+    if (![_userInput.text isEqual:@""]){
+        inputString = [NSMutableArray array];
+        
+        NSString *str = _userInput.text;
+        NSMutableString *returnString = [[NSMutableString alloc]init];
+        NSString *tempString;
+
+        JKBigInteger *mod_inverse = [[JKBigInteger alloc] initWithUnsignedLong:(unsigned long)_e];
+        JKBigInteger *mod = [[JKBigInteger alloc] initWithUnsignedLong:(unsigned long)_n];
+        
+        
+        for (int i = 0; i < [str length]; i++) {
+            NSString *character = [str substringWithRange:NSMakeRange(i, 1)];
+            [inputString addObject:character];
+            JKBigInteger *item = [[JKBigInteger alloc] initWithUnsignedLong:(unsigned long)inputString[i]];
+            tempString = [NSString stringWithFormat:@"%@ ",[item pow:mod_inverse andMod:mod]];
+            [returnString appendString:tempString];
+        }
+        _encodedText.text = returnString;
+    }
 }
 
 - (void)didReceiveMemoryWarning {

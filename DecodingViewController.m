@@ -13,8 +13,13 @@
 @property (weak, nonatomic) IBOutlet UITextField *inputText;
 @property (weak, nonatomic) IBOutlet UITextField *key1Input;
 @property (weak, nonatomic) IBOutlet UITextField *key2Input;
+@property (weak, nonatomic) IBOutlet UITextField *privateKeyInput;
 @property (weak, nonatomic) IBOutlet UITextView *decodedText;
 - (IBAction)decodeButtonPressed:(id)sender;
+
+@property int e;
+@property int d;
+@property int n;
 
 @end
 
@@ -42,6 +47,12 @@
         //self.tabBarItem.image = image;
     }
     return self;
+}
+
+-(void)initializeN:(int)n andE:(int)e andD:(int)d {
+    _n = n;
+    _e = e;
+    _d = d;
 }
 
 - (void)viewDidLoad {
@@ -83,7 +94,17 @@
 }
 
 - (void)decode {
+    if (![_key1Input isEqual:[NSString stringWithFormat:@"%d", _n]]
+        || ![_key2Input isEqual:[NSString stringWithFormat:@"%d", _e]]
+        || ![_key1Input isEqual:[NSString stringWithFormat:@"%d", _n]]){
+        //this means that the user has entered the wrong public keys
+        _decodedText.text = @"WRONG INPUT KEYS";
+        return;
+    }
     
+    else {
+        
+    }
 }
 
 - (IBAction)decodeButtonPressed:(id)sender {

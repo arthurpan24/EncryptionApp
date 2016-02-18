@@ -10,4 +10,6 @@
 
 @interface DecodingViewController : UIViewController
 
+-(void)initializeN:(int)n andE:(int)e andD:(int)d;
+
 @end
