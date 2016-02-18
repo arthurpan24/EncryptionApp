@@ -7,15 +7,14 @@
 //
 
 #import "AppDelegate.h"
-
-@interface AppDelegate ()
-
-@end
-
 #import "ViewController.h"
 #import "EncodingViewController.h"
 #import "DecodingViewController.h"
 #import "SieveOfEratosthenes.h"
+
+@interface AppDelegate ()
+
+@end
 
 @implementation AppDelegate
 
@@ -23,24 +22,19 @@
     
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     
-    
     SieveOfEratosthenes *pointer = [[SieveOfEratosthenes alloc] initWithSize:100];
-    
-    //[pointer createShortArrayOfPrimes];
-    
     NSBundle *appBundle = [NSBundle mainBundle];
     
     DecodingViewController *dvc = [[DecodingViewController alloc] initWithNibName:@"DecodingViewController" bundle:appBundle];
     EncodingViewController *evc = [[EncodingViewController alloc] initWithNibName:@"EncodingViewController" bundle:appBundle];
     
-    [evc initArrayOfPrimes:[pointer returnShortArrayOfPrimes] withSize:[pointer returnSize]];
-    [evc generateKeys];
-    [dvc initializeN:[evc getN] andE:[evc getE] andD:[evc getD]];
+    [evc initArrayOfPrimes:[pointer returnShortArrayOfPrimes] withSize:[pointer returnSize]]; //generate primes before opening evc
+    [evc generateKeys]; //generate keys before any user input is done
+    
+    [dvc initializeN:[evc getN] andE:[evc getE] andD:[evc getD]]; //initialize dvc with the keys provided by evc
     
     UITabBarController *tabBarController = [[UITabBarController alloc] init];
-    
     tabBarController.viewControllers = @[evc, dvc];
-    
     self.window.rootViewController = tabBarController;
     
     self.window.backgroundColor = [UIColor whiteColor];

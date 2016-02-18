@@ -11,10 +11,8 @@
 @interface SieveOfEratosthenes : NSObject
 
 - (id) initWithSize:(int)maxSize;
-+ (BOOL *) returnArrayOfPrimes;
 - (int *) returnShortArrayOfPrimes;
 - (int) returnSize;
-+ (void) testPrime;
 - (void) createShortArrayOfPrimes;
 
 @end

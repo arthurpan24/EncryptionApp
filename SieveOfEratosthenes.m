@@ -32,18 +32,10 @@ int numberOfPrimes;
     return numberOfPrimes;
 }
 
-+ (BOOL *) returnArrayOfPrimes {
-    return arrayOfPrimes;
-}
-
 - (int *) returnShortArrayOfPrimes {
     return shortArrayOfPrimes;
 }
 
-+ (void) testPrime {
-    NSLog(@"this works");
-    
-}
 
 - (void) createShortArrayOfPrimes {
     for (int i =0; i < maxNumber; i++){
@@ -61,7 +53,6 @@ int numberOfPrimes;
         }
     }
     
-    NSLog(@"PRIMES UNDER %d: ", maxNumber);
     NSMutableString *testString2 = [[NSMutableString alloc]init];
     NSString *tempString2;
     for (int i =0; i < numberOfPrimes; i++){
@@ -69,8 +60,6 @@ int numberOfPrimes;
         [testString2 appendString:tempString2];
         
     }
-    NSLog(@"%@", testString2);
-    NSLog(@"number of primes: %d", numberOfPrimes);
     return;
 }
 

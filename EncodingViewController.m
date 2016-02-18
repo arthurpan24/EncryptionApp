@@ -12,7 +12,7 @@
 
 #include <stdlib.h>
 
-@interface EncodingViewController () <UITextFieldDelegate>
+@interface EncodingViewController () <UITextFieldDelegate, UITextViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UITextField *userInput;
 @property (weak, nonatomic) IBOutlet UILabel *key1;
@@ -23,6 +23,7 @@
 
 - (IBAction)handleButtonClick:(id)sender;
 
+//The variables used in RSA Encryption
 @property int p;
 @property int q;
 @property int n;
@@ -34,23 +35,22 @@
 
 @implementation EncodingViewController
 
-NSMutableArray *inputString;
-int *arr; //this might be a bad implementation
+int *arr; 
 int numPrime;
 
+//Receive array of primes and the number of primes for that array
 - (void) initArrayOfPrimes:(int *)array withSize:(int)numberPrimes{
     arr = array;
     numPrime = numberPrimes;
 }
 
 - (instancetype)initWithNibName:(NSString *)nibNameOrNil
-                        bundle:(NSBundle *)nibBundleOrNil {
+                         bundle:(NSBundle *)nibBundleOrNil {
     self = [super initWithNibName:nibNameOrNil
                            bundle:nibBundleOrNil];
     if (self) {
         //Set the tab bar item's title
-        self.tabBarItem.title = @"encodingVC";
-        
+        self.tabBarItem.title = @"Encode";
         
         //Create a UIImage from a file
         //This will use Hypno@2x.png on retina display devices
@@ -62,36 +62,45 @@ int numPrime;
     return self;
 }
 
--(int)getN{
-    return _n;
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    [_userInput setDelegate:self];
+    [_encodedText setDelegate:self];
+    
+    for (UIGestureRecognizer *recognizer in _encodedText.gestureRecognizers) {
+        if ([recognizer isKindOfClass:[UILongPressGestureRecognizer class]]){
+            recognizer.enabled = NO;
+        }
+    }
+    
+    //Initialize LongPressGesture so that user can select and copy all of encoded text
+    UILongPressGestureRecognizer *LongPressGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self
+                                                                                                   action:@selector(LongPressgesture:)];
+    [_encodedText addGestureRecognizer:LongPressGesture];
 }
 
--(int)getD{
-    return _d;
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    _userInput.placeholder = @"Encode this";
+    _userInput.returnKeyType = UIReturnKeyDone;
 }
 
--(int)getE{
-    return _e;
-}
-
-- (void) generateKeys {
-    _p = arc4random_uniform((int)(numPrime-1)/2) + (int)(numPrime-1)/2;
-    _q = arc4random_uniform((int)(numPrime-1)/2) + (int)(numPrime-1)/2;
+//Generates the keys necessary for RSA Encryption
+//Keys n and e are public keys
+//Key d is a private key used to decrypt and RSA Encryption
+- (void)generateKeys {
+    _p = arr[arc4random_uniform((int)(numPrime-1)/2) + (int)(numPrime-1)/2]; //selects randomPrime from upper half of range
+    _q = arr[arc4random_uniform((int)(numPrime-1)/2) + (int)(numPrime-1)/2]; //selects randomPrime from upper half of range
     _n = _p * _q;
     _totient = (_p-1)*(_q-1);
     _d = arr[numPrime-1];
-    _e = [self mul_inv:_d withMod:_totient];
-    
-    NSLog(@"e value: %d", _e);
-    NSLog(@"p value: %d", _p);
-    NSLog(@"q value: %d", _q);
-    NSLog(@"d value: %d", _d);
-    NSLog(@"totient value: %d", _totient);
-    NSLog(@"n value: %d", _n);
+    _e = [self multiplicative_inverse:_d withMod:_totient];
 }
 
-//OK, this works, but is this brute force or nah?
--(int) mul_inv:(int) a withMod:(int)b
+//Implements Extended Euclid Algorithm to find the multiplicative inverse
+//Credit to geeksforgeeks.com for implementation help
+- (int)multiplicative_inverse:(int) a withMod:(int)b
 {
     int b0 = b, t, q;
     int x0 = 0, x1 = 1;
@@ -105,8 +114,81 @@ int numPrime;
     return x1;
 }
 
-//for if we want to do exponentials fast with smaller numbers
-- (int) binaryExponentiationBase:(int)x withPower:(int)n {
+
+//Recognizes if user presses and holds on text so that user can select all
+- (void)LongPressgesture:(UILongPressGestureRecognizer *)recognizer
+{
+    if (recognizer.state != UIGestureRecognizerStateEnded) {
+        [_encodedText selectAll:self];
+    }
+}
+
+//Function detects whether or not user is finished editing textField box
+- (BOOL)textFieldShouldReturn:(UITextField *)textField {
+    [textField resignFirstResponder];
+    return YES;
+}
+
+//Function detects whether or not user is finished editing textView box
+- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text {
+    if([text isEqualToString:@"\n"]) {
+        [textView resignFirstResponder];
+        return NO;
+    }
+    return YES;
+}
+
+//This function takes a string and encodes each character, displaying them with a space in between each code
+- (void)encode {
+    //if user input is not empty, encode
+    if (![_userInput.text isEqual:@""]){
+        NSMutableArray *inputString = [NSMutableArray array];
+        
+        NSString *str = _userInput.text;
+        NSMutableString *returnString = [[NSMutableString alloc]init];
+        
+        JKBigInteger *mod_inverse = [[JKBigInteger alloc] initWithUnsignedLong:(unsigned long)_e];
+        JKBigInteger *mod = [[JKBigInteger alloc] initWithUnsignedLong:(unsigned long)_n];
+        
+        //Loop through the input string, get each character, and encode it
+        for (int i = 0; i < [str length]; i++) {
+            [inputString addObject:[str substringWithRange:NSMakeRange(i, 1)]];
+            NSString *string = inputString[i];
+            JKBigInteger *item = [[JKBigInteger alloc] initWithUnsignedLong:(unsigned long)[string characterAtIndex:0]];
+            [returnString appendString:[NSString stringWithFormat:@"%@ ",[item pow:mod_inverse andMod:mod]]];
+        }
+        _encodedText.text = returnString;
+    }
+}
+
+- (void)setKeys {
+    _key1.text = [NSString stringWithFormat:@"%d", _n];
+    _key2.text = [NSString stringWithFormat:@"%d", _e];
+    _privateKey.text = [NSString stringWithFormat:@"%d", _d];
+}
+
+//When button is pressed, execute encode
+- (IBAction)handleButtonClick:(id)sender {
+    [self setKeys];
+    [self encode];
+}
+
+//Getters to send information to DecodingViewController
+- (int)getN{
+    return _n;
+}
+
+- (int)getD{
+    return _d;
+}
+
+- (int)getE{
+    return _e;
+}
+
+//For if we want to do exponentials fast with smaller numbers
+//currently not used for the current implementation
+- (int)binaryExponentiationBase:(int)x withPower:(int)n {
     if (n ==0)
         return 1;
     else if (n == 1)
@@ -118,75 +200,9 @@ int numPrime;
     return -1;
 }
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    // Do any additional setup after loading the view from its nib.
-    [_userInput setDelegate:self];
-   // NSString* testPrint = [_userInput text];
-    //NSLog(@"echo %@", testPrint);
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
-    
-    _userInput.placeholder = @"Encode this";
-    _userInput.returnKeyType = UIReturnKeyDone;
-    
-    _encodedText.text = @"";
-    _key1.text = @"";
-    _key2.text = @"";
-}
-
-- (BOOL)textFieldShouldReturn:(UITextField *)textField {
-    NSLog(@"%@", _userInput.text);
-    _encodedText.text = _userInput.text;
-
-    [self encode];
-    [textField resignFirstResponder];
-    return YES;
-}
-
-- (void)encode {
-    if (![_userInput.text isEqual:@""]){
-        inputString = [NSMutableArray array];
-        
-        NSString *str = _userInput.text;
-        NSMutableString *returnString = [[NSMutableString alloc]init];
-        NSString *tempString;
-
-        JKBigInteger *mod_inverse = [[JKBigInteger alloc] initWithUnsignedLong:(unsigned long)_e];
-        JKBigInteger *mod = [[JKBigInteger alloc] initWithUnsignedLong:(unsigned long)_n];
-        
-        
-        for (int i = 0; i < [str length]; i++) {
-            NSString *character = [str substringWithRange:NSMakeRange(i, 1)];
-            [inputString addObject:character];
-            JKBigInteger *item = [[JKBigInteger alloc] initWithUnsignedLong:(unsigned long)inputString[i]];
-            tempString = [NSString stringWithFormat:@"%@ ",[item pow:mod_inverse andMod:mod]];
-            [returnString appendString:tempString];
-        }
-        _encodedText.text = returnString;
-    }
-}
-
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
-}
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
-
-- (IBAction)handleButtonClick:(id)sender {
-    _key1.text = [NSString stringWithFormat:@"%d", _n];
-    _key2.text = [NSString stringWithFormat:@"%d", _e];
 }
 
 @end
