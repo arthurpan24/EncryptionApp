@@ -22,7 +22,7 @@
     
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     
-    SieveOfEratosthenes *pointer = [[SieveOfEratosthenes alloc] initWithSize:100];
+    SieveOfEratosthenes *pointer = [[SieveOfEratosthenes alloc] initWithSize:1000]; //up to user to set how many primes you want
     NSBundle *appBundle = [NSBundle mainBundle];
     
     DecodingViewController *dvc = [[DecodingViewController alloc] initWithNibName:@"DecodingViewController" bundle:appBundle];

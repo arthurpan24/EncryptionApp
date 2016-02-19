@@ -8,6 +8,8 @@
 
 #import "EncodingViewController.h"
 #import "SieveOfEratosthenes.h"
+#import <QuartzCore/QuartzCore.h>
+
 #import "JKBigInteger.h" //Imported Library to handle big integers
 
 #include <stdlib.h>
@@ -52,12 +54,14 @@ int numPrime;
         //Set the tab bar item's title
         self.tabBarItem.title = @"Encode";
         
+         [self.view setBackgroundColor:[UIColor colorWithRed:0.32 green:0.32 blue:0.32 alpha:1.0]];
+
+        
         //Create a UIImage from a file
-        //This will use Hypno@2x.png on retina display devices
-        //UIImage *image = [UIImage imageNamed:@"Hypno.png"];
+        UIImage *image = [UIImage imageNamed:@"locksmall.png"];
         
         //Put that image on the tab bar item
-        //self.tabBarItem.image = image;
+        self.tabBarItem.image = image;
     }
     return self;
 }
@@ -66,7 +70,8 @@ int numPrime;
     [super viewDidLoad];
     [_userInput setDelegate:self];
     [_encodedText setDelegate:self];
-    
+    _userInput.layer.borderColor=[[UIColor redColor]CGColor];
+
     for (UIGestureRecognizer *recognizer in _encodedText.gestureRecognizers) {
         if ([recognizer isKindOfClass:[UILongPressGestureRecognizer class]]){
             recognizer.enabled = NO;
@@ -82,6 +87,11 @@ int numPrime;
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
+    [[_generateButton layer] setBorderWidth:1.0f];
+    [[_generateButton layer] setBorderColor:[UIColor whiteColor].CGColor];
+    _generateButton.layer.cornerRadius = 10;
+    _generateButton.clipsToBounds = YES;
+    
     _userInput.placeholder = @"Encode this";
     _userInput.returnKeyType = UIReturnKeyDone;
 }
@@ -94,7 +104,7 @@ int numPrime;
     _q = arr[arc4random_uniform((int)(numPrime-1)/2) + (int)(numPrime-1)/2]; //selects randomPrime from upper half of range
     _n = _p * _q;
     _totient = (_p-1)*(_q-1);
-    _d = arr[numPrime-1];
+    _d = arr[arc4random_uniform((int)(numPrime-1)/2) + (int)(numPrime-1)/2]; //generate random privateKey
     _e = [self multiplicative_inverse:_d withMod:_totient];
 }
 

@@ -8,6 +8,8 @@
 
 #import "DecodingViewController.h"
 #import "SieveOfEratosthenes.h"
+#import <QuartzCore/QuartzCore.h>
+
 #import "JKBigInteger.h" //Imported library to handle big integers
 
 @interface DecodingViewController () <UITextFieldDelegate, UITextViewDelegate>
@@ -18,6 +20,7 @@
 @property (weak, nonatomic) IBOutlet UITextField *privateKeyInput;
 @property (weak, nonatomic) IBOutlet UITextView *decodedText;
 @property (weak, nonatomic) IBOutlet UILabel *message;
+@property (weak, nonatomic) IBOutlet UIButton *decodeButton;
 
 - (IBAction)decodeButtonPressed:(id)sender;
 
@@ -39,12 +42,14 @@
         //Set the tab bar item's title
         self.tabBarItem.title = @"Decode";
         
+        [self.view setBackgroundColor:[UIColor colorWithRed:0.32 green:0.32 blue:0.32 alpha:1.0]];
+
         //Create a UIImage from a file
         //This will use Hypno@2x.png on retina display devices
-        //UIImage *image = [UIImage imageNamed:@"Hypno.png"];
+        UIImage *image = [UIImage imageNamed:@"redlock.png"];
         
         //Put that image on the tab bar item
-        //self.tabBarItem.image = image;
+        self.tabBarItem.image = image;
     }
     return self;
 }
@@ -67,6 +72,11 @@
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    
+    [[_decodeButton layer] setBorderWidth:1.0f];
+    [[_decodeButton layer] setBorderColor:[UIColor whiteColor].CGColor];
+    _decodeButton.layer.cornerRadius = 10; 
+    _decodeButton.clipsToBounds = YES;
     
     //Initialize the text boxes
     _inputText.placeholder = @"Decode this";
